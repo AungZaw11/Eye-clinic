@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { doc, deleteDoc, updateDoc } from 'firebase/firestore';
-import { db } from '../firebaseConfig';
+import { db } from '../firebaseconfig'; // သင့်ဖိုင်နာမည်အတိုင်း သေချာစစ်ပါ
 import * as XLSX from 'xlsx';
 
 const PatientTable = ({ patients, refreshData }) => {
@@ -14,9 +14,10 @@ const PatientTable = ({ patients, refreshData }) => {
     }
   };
 
-  // Excel Export Function
   const exportToExcel = () => {
-    const worksheet = XLSX.utils.json_to_sheet(patients);
+    // အသစ်ဆုံးကို ထိပ်တင်ပြီးမှ Excel Export ထုတ်ခြင်း
+    const sortedData = [...patients].sort((a, b) => new Date(b.date) - new Date(a.date));
+    const worksheet = XLSX.utils.json_to_sheet(sortedData);
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, "Patients");
     XLSX.writeFile(workbook, "PatientData.xlsx");
@@ -35,7 +36,7 @@ const PatientTable = ({ patients, refreshData }) => {
 
   return (
     <div className="space-y-4">
-      {/* Export Button */}
+      {/* Excel Export Button */}
       <div className="flex justify-end">
         <button 
           onClick={exportToExcel}
@@ -45,7 +46,10 @@ const PatientTable = ({ patients, refreshData }) => {
         </button>
       </div>
 
-      {patients.map((p) => (
+      {/* Sorting: Date အသစ်ဆုံးကို ထိပ်ဆုံးတင်ပြသခြင်း */}
+      {[...patients]
+        .sort((a, b) => new Date(b.date) - new Date(a.date))
+        .map((p) => (
         <div key={p.id} className="bg-white dark:bg-gray-800 p-4 rounded-xl shadow-sm border dark:border-gray-700">
           {editingId === p.id ? (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">

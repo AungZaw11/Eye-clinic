@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'; // <--- ဒီလိုင်းက အဓိကပါ
 import { collection, getDocs } from 'firebase/firestore';
-import { db } from './firebaseConfig';
+import { db } from './firebaseconfig';
 import PatientForm from './components/PatientForm';
 import PatientTable from './components/PatientTable';
 import DashboardSummary from './components/DashboardSummary';
@@ -12,7 +12,17 @@ function App() {
 
   const fetchPatients = async () => {
     const querySnapshot = await getDocs(collection(db, "patients"));
-    setPatients(querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+    
+    // ဒေတာတွေကို ရယူပြီးတဲ့အခါ 'date' အလိုက် စီပေးခြင်း
+    const data = querySnapshot.docs.map(doc => ({ 
+      id: doc.id, 
+      ...doc.data() 
+    }));
+
+    // sort လုပ်ခြင်း (အသစ်ဆုံးရက်စွဲကို အပေါ်ဆုံးတင်ရန်)
+    const sortedData = data.sort((a, b) => new Date(b.date) - new Date(a.date));
+    
+    setPatients(sortedData);
   };
 
   useEffect(() => {
@@ -25,7 +35,7 @@ function App() {
       <div className="max-w-6xl mx-auto space-y-8">
         
         <div className="flex justify-between items-center">
-          <h1 className="text-3xl font-bold text-gray-800 dark:text-white font-italic">For MaMa</h1>
+          <h1 className="text-3xl font-bold text-gray-800 dark:text-white font-italic">Eye Clinic Management</h1>
           
         </div>
         

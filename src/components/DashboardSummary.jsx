@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { db } from '../firebaseConfig';
+import { db } from '../firebaseconfig';
 import { collection, getDocs } from 'firebase/firestore';
+// Icon များကို import လုပ်ခြင်း
+import { CalendarDays, Users, History } from 'lucide-react';
 
 const DashboardSummary = () => {
   const [stats, setStats] = useState({ today: 0, yesterday: 0, total: 0 });
@@ -11,7 +13,6 @@ const DashboardSummary = () => {
       const querySnapshot = await getDocs(collection(db, "patients"));
       const patients = querySnapshot.docs.map(doc => doc.data());
 
-      // ယနေ့နှင့် မနေ့က ရက်စွဲများ (YYYY-MM-DD format)
       const today = new Date().toISOString().split('T')[0];
       const yesterday = new Date(Date.now() - 86400000).toISOString().split('T')[0];
       
@@ -25,23 +26,41 @@ const DashboardSummary = () => {
     fetchData();
   }, []);
 
-  if (loading) return <div className="text-gray-500 p-4">Loading stats...</div>;
+  if (loading) return <div className="text-gray-500 p-4">Loading...</div>;
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-      <div className="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-sm border dark:border-gray-700">
-        <h3 className="text-sm text-gray-500 dark:text-gray-400 font-semibold uppercase">ယနေ့လူနာ</h3>
-        <p className="text-4xl font-bold text-blue-600 dark:text-blue-400 mt-2">{stats.today}</p>
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+      {/* ယနေ့လူနာ */}
+      <div className="bg-white dark:bg-gray-800 p-4 rounded-xl shadow-sm border dark:border-gray-700 flex items-center gap-4">
+        <div className="p-3 bg-blue-100 dark:bg-blue-900 rounded-lg text-blue-600 dark:text-blue-300">
+          <CalendarDays size={24} />
+        </div>
+        <div>
+          <h3 className="text-xs text-gray-500 dark:text-gray-400 font-semibold uppercase">ယနေ့</h3>
+          <p className="text-2xl font-bold text-gray-800 dark:text-white">{stats.today}</p>
+        </div>
       </div>
       
-      <div className="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-sm border dark:border-gray-700">
-        <h3 className="text-sm text-gray-500 dark:text-gray-400 font-semibold uppercase">မနေ့ကလူနာ</h3>
-        <p className="text-4xl font-bold text-purple-600 dark:text-purple-400 mt-2">{stats.yesterday}</p>
+      {/* မနေ့ကလူနာ */}
+      <div className="bg-white dark:bg-gray-800 p-4 rounded-xl shadow-sm border dark:border-gray-700 flex items-center gap-4">
+        <div className="p-3 bg-purple-100 dark:bg-purple-900 rounded-lg text-purple-600 dark:text-purple-300">
+          <History size={24} />
+        </div>
+        <div>
+          <h3 className="text-xs text-gray-500 dark:text-gray-400 font-semibold uppercase">မနေ့က</h3>
+          <p className="text-2xl font-bold text-gray-800 dark:text-white">{stats.yesterday}</p>
+        </div>
       </div>
 
-      <div className="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-sm border dark:border-gray-700">
-        <h3 className="text-sm text-gray-500 dark:text-gray-400 font-semibold uppercase">စုစုပေါင်းလူနာ</h3>
-        <p className="text-4xl font-bold text-green-600 dark:text-green-400 mt-2">{stats.total}</p>
+      {/* စုစုပေါင်း */}
+      <div className="bg-white dark:bg-gray-800 p-4 rounded-xl shadow-sm border dark:border-gray-700 flex items-center gap-4">
+        <div className="p-3 bg-green-100 dark:bg-green-900 rounded-lg text-green-600 dark:text-green-300">
+          <Users size={24} />
+        </div>
+        <div>
+          <h3 className="text-xs text-gray-500 dark:text-gray-400 font-semibold uppercase">စုစုပေါင်း</h3>
+          <p className="text-2xl font-bold text-gray-800 dark:text-white">{stats.total}</p>
+        </div>
       </div>
     </div>
   );
